@@ -1,0 +1,14 @@
+.form_container {
+  margin: 2rem;
+  text-align: center;
+}
+
+.req_main {
+  display: flex;
+}
+
+.top_right_btn {
+  position: absolute;
+  right: 5px !important;
+  top: 0px;
+}
