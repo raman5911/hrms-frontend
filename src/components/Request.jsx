@@ -15,181 +15,181 @@ import { ToastContainer, toast } from "react-toastify";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
-import { DisplayRequestedToMe, DisplayAppliedByMe } from './DisplayRequest';
+import { DisplayRequestedToMe, DisplayAppliedByMe } from "./DisplayRequest";
 
-function Request() {
-    const location = useLocation();
-    const user = location.state?.user;
-    console.log(user);
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1),
+  },
+  "& .MuiPaper-root": {
+    // Apply styles to the Dialog's Paper component
+    width: "800px", // Set your desired width
+    height: "600px", // Set your desired height
+    maxWidth: "none", // Override default maxWidth
+  },
+}));
 
-    useEffect(() => {
+const ReqForm = ({ inputValue, handleOnChange }) => {
+  // const [department, setDepartment] = useState("");
+  // const [subject, setSubject] = useState("");
+  // const [desc, setDesc] = useState("");
 
-    }, []);
+  return (
+    <Box
+      component="form"
+      sx={{
+        "& > :not(style)": { m: 1, width: "25ch" },
+      }}
+      noValidate
+      autoComplete="off"
+    >
+      <div>
+        <InputLabel id="dept-select">Department</InputLabel>
+        <Select
+          labelId="dept-select"
+          id="department"
+          label="Department"
+          name="department"
+          value={inputValue.department}
+          onChange={(e) => handleOnChange(e)}
+        >
+          <MenuItem value="IT">IT</MenuItem>
+          <MenuItem value="HR">HR</MenuItem>
+          <MenuItem value="Manager">Manager</MenuItem>
+        </Select>
+      </div>
+      <div>
+        <TextField
+          name="subject"
+          id="subject"
+          label="Subject"
+          fullWidth
+          value={inputValue.subject}
+          onChange={(e) => {
+            handleOnChange(e);
+          }}
+          variant="outlined"
+        />
+      </div>
+      <div>
+        <TextField
+          name="desc"
+          id="desc"
+          label="Description"
+          fullWidth
+          multiline
+          value={inputValue.desc}
+          onChange={(e) => {
+            handleOnChange(e);
+          }}
+          variant="outlined"
+        />
+      </div>
+    </Box>
+  );
+};
 
-    const [inputValue, setInputValue] = useState({
-        department: "",
-        subject: "",
-        desc: "",
-      });
-  
-      const handleError = (err) =>
-        toast.error(err, {
-          position: "bottom-left",
-        });
-      const handleSuccess = (msg) =>
-        toast.success(msg, {
-          position: "bottom-left",
-        });
-  
-      const handleSubmit = async (e) => {
-        try {
-          const { data } = await axios.post(
-            `${process.env.REACT_APP_REQUEST_URL}/requests/create_request`,
-            {
-              ...inputValue,
-              user
-            },
-            { withCredentials: true }
-          );
-          console.log(data);
-          const { success, message } = data;
-          if (success) {
-            handleSuccess(message);
-          } else {
-            handleError(message);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-        setInputValue({
-          ...inputValue,
-          department: "",
-          subject: "",
-          desc: "",
-        });
-      };
-  
-      const handleOnChange = (e) => {
-        const { name, value } = e.target;
-        setInputValue((prevInputValue) => ({
-            ...prevInputValue,
-            [name]: value,
-        }));
-      };
-
-  const ReqForm = () => {
-    // const [department, setDepartment] = useState("");
-    // const [subject, setSubject] = useState("");
-    // const [desc, setDesc] = useState("");
-
-    return (
-      <Box
-        component="form"
+function SimpleDialog({
+  onClose,
+  open,
+  handleSubmit,
+  inputValue,
+  handleOnChange,
+}) {
+  return (
+    <BootstrapDialog
+      onClose={onClose}
+      aria-labelledby="customized-dialog-title"
+      open={open}
+    >
+      <DialogTitle id="customized-dialog-title">Create New Request</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={onClose}
         sx={{
-          "& > :not(style)": { m: 1, width: "25ch" },
+          position: "absolute",
+          right: 8,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
         }}
-        noValidate
-        autoComplete="off"
       >
-        <div>
-          <InputLabel id="dept-select">Department</InputLabel>
-          <Select
-            labelId="dept-select"
-            id="department"
-            label="Department"
-            name="department"
-            value={inputValue.department}
-            onChange={(e) => handleOnChange(e)}
-          >
-            <MenuItem value="IT">IT</MenuItem>
-            <MenuItem value="HR">HR</MenuItem>
-            <MenuItem value="Manager">Manager</MenuItem>
-          </Select>
-        </div>
-        <div>
-          <TextField
-            name="subject"
-            id="subject"
-            label="Subject"
-            fullWidth
-            value={inputValue.subject}
-            onChange={(e) => {
-              handleOnChange(e);
-            }}
-            variant="outlined"
-          />
-        </div>
-        <div>
-          <TextField
-            name="desc"
-            id="desc"
-            label="Description"
-            fullWidth
-            multiline
-            value={inputValue.desc}
-            onChange={(e) => {
-              handleOnChange(e);
-            }}
-            variant="outlined"
-          />
-        </div>
-      </Box>
-    );
-  };
-
-  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    "& .MuiDialogContent-root": {
-      padding: theme.spacing(2),
-    },
-    "& .MuiDialogActions-root": {
-      padding: theme.spacing(1),
-    },
-  }));
-
-  function SimpleDialog(props) {
-    const { onClose, selectedValue, open } = props;
-
-    const handleClose = () => {
-      onClose(selectedValue);
-    };
-
-    return (
-      <BootstrapDialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-      >
-        <DialogTitle id="customized-dialog-title">
-          Create New Request
-        </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
+        <CloseIcon />
+      </IconButton>
+      <DialogContent dividers>
+        <ReqForm inputValue={inputValue} handleOnChange={handleOnChange} />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          autoFocus
+          onClick={() => {
+            handleSubmit();
           }}
         >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent dividers>
-          <ReqForm />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            autoFocus
-            onClick={() => {
-              handleSubmit();
-            }}
-          >
-            Apply
-          </Button>
-        </DialogActions>
-      </BootstrapDialog>
-    );
-  }
+          Apply
+        </Button>
+      </DialogActions>
+    </BootstrapDialog>
+  );
+}
+
+function Request() {
+  const location = useLocation();
+  const user = location.state?.user;
+  console.log(user);
+
+  const [inputValue, setInputValue] = useState({
+    department: "",
+    subject: "",
+    desc: "",
+  });
+
+  const handleError = (err) =>
+    toast.error(err, {
+      position: "bottom-left",
+    });
+  const handleSuccess = (msg) =>
+    toast.success(msg, {
+      position: "bottom-left",
+    });
+
+  const handleSubmit = async (e) => {
+    try {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_REQUEST_URL}/requests/create_request`,
+        {
+          ...inputValue,
+          user,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
+      const { success, message } = data;
+      if (success) {
+        handleSuccess(message);
+      } else {
+        handleError(message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setInputValue({
+      ...inputValue,
+      department: "",
+      subject: "",
+      desc: "",
+    });
+  };
+
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setInputValue((prevInputValue) => ({
+      ...prevInputValue,
+      [name]: value,
+    }));
+  };
 
   const [open, setOpen] = React.useState(false);
 
@@ -199,6 +199,12 @@ function Request() {
 
   const handleClose = (value) => {
     setOpen(false);
+    setInputValue({
+      ...inputValue,
+      department: "",
+      subject: "",
+      desc: "",
+    });
   };
 
   // dummy data for table requested to me (needs to be changed later)
@@ -206,18 +212,18 @@ function Request() {
     {
       name: "Sam",
       req_type: "Leave",
-      reason: "Sick leave"
+      reason: "Sick leave",
     },
     {
       name: "Myke",
       req_type: "IT equipment",
-      reason: "Mouse is damaged"
+      reason: "Mouse is damaged",
     },
     {
       name: "Franklin",
       req_type: "HR",
-      reason: "Appraisel request"
-    }
+      reason: "Appraisel request",
+    },
   ];
 
   const my_requests = [
@@ -226,26 +232,29 @@ function Request() {
       req_type: "Leave",
       reason: "Sick leave",
       status: "Pending",
-      applied_on: "15/07/24"
+      applied_on: "15/07/24",
     },
     {
       name: "Trevor",
       req_type: "IT equipment",
       reason: "Mouse is damaged",
       status: "Pending",
-      applied_on: "15/07/24"
+      applied_on: "15/07/24",
     },
     {
       name: "Lamar",
       req_type: "HR",
       reason: "Appraisel request",
       status: "Pending",
-      applied_on: "15/07/24"
+      applied_on: "15/07/24",
     },
   ];
 
   return (
-    <div className="req_main" style={{ position: "relative", padding: "2rem 1rem" }}>
+    <div
+      className="req_main"
+      style={{ position: "relative", padding: "2rem 1rem" }}
+    >
       <Button
         variant="contained"
         className="top_right_btn"
@@ -253,12 +262,18 @@ function Request() {
         style={{
           position: "absolute",
           right: "10px",
-          top: "60px"
+          top: "60px",
         }}
       >
         Create New Request
       </Button>
-      <SimpleDialog open={open} onClose={handleClose} />
+      <SimpleDialog
+        open={open}
+        onClose={handleClose}
+        handleSubmit={handleSubmit}
+        inputValue={inputValue}
+        handleOnChange={handleOnChange}
+      />
 
       <h1>Requested to You</h1>
 

@@ -31,11 +31,13 @@ import EventNoteIcon from "@mui/icons-material/EventNote";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from '@mui/icons-material/Home';
+import DownloadIcon from '@mui/icons-material/Download';
 
 import Attendance from "./Attendance";
 import Reports from "./Reports";
 import Request from "./Request";
 import Profile from "./Profile";
+import Templates from "./Templates";
 
 const Dashboard = () => {
   const drawerWidth = 240;
@@ -272,9 +274,23 @@ const Dashboard = () => {
           >
             <ListItemButton>
               <ListItemIcon>
-                <DescriptionIcon />
+                <DownloadIcon />
               </ListItemIcon>
               <ListItemText primary="Reports" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem
+            onClick={() => {
+              navigate("/dashboard/templates");
+            }}
+            disablePadding
+          >
+            <ListItemButton>
+              <ListItemIcon>
+                <DescriptionIcon />
+              </ListItemIcon>
+              <ListItemText primary="Templates" />
             </ListItemButton>
           </ListItem>
 
@@ -314,6 +330,7 @@ const Dashboard = () => {
           <Route path="attendance" element={<Attendance />} />
           <Route path="reports" element={<Reports />} />
           <Route path="requests" element={<Request />} />
+          <Route path="templates" element={<Templates />} />
           <Route path="profile" element={<Profile />} />
         </Routes>
 
