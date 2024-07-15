@@ -15,7 +15,7 @@ import { ToastContainer, toast } from "react-toastify";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
-import DisplayRequest from "./DisplayRequest";
+import { DisplayRequestedToMe, DisplayAppliedByMe } from './DisplayRequest';
 
 function Request() {
     const location = useLocation();
@@ -201,6 +201,49 @@ function Request() {
     setOpen(false);
   };
 
+  // dummy data for table requested to me (needs to be changed later)
+  const req_to_me = [
+    {
+      name: "Sam",
+      req_type: "Leave",
+      reason: "Sick leave"
+    },
+    {
+      name: "Myke",
+      req_type: "IT equipment",
+      reason: "Mouse is damaged"
+    },
+    {
+      name: "Franklin",
+      req_type: "HR",
+      reason: "Appraisel request"
+    }
+  ];
+
+  const my_requests = [
+    {
+      name: "Micheal",
+      req_type: "Leave",
+      reason: "Sick leave",
+      status: "Pending",
+      applied_on: "15/07/24"
+    },
+    {
+      name: "Trevor",
+      req_type: "IT equipment",
+      reason: "Mouse is damaged",
+      status: "Pending",
+      applied_on: "15/07/24"
+    },
+    {
+      name: "Lamar",
+      req_type: "HR",
+      reason: "Appraisel request",
+      status: "Pending",
+      applied_on: "15/07/24"
+    },
+  ];
+
   return (
     <div className="req_main" style={{ position: "relative", padding: "2rem 1rem" }}>
       <Button
@@ -219,11 +262,11 @@ function Request() {
 
       <h1>Requested to You</h1>
 
-      <DisplayRequest />
+      <DisplayRequestedToMe requestsData={req_to_me} />
 
       <h1>Applied by you</h1>
 
-      <DisplayRequest />
+      <DisplayAppliedByMe requestsData={my_requests} />
 
       <div></div>
     </div>
