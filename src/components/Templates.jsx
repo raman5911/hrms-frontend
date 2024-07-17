@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import Button from "@mui/material/Button";
@@ -21,11 +21,17 @@ import {
   TableRow,
   TableBody,
   TableContainer,
-  Typography
+  Typography,
 } from "@mui/material";
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import ViewTemplateDetails from "./ViewTemplateDetails";
+import EditTemplate from "./EditTemplate";
+
+import { getDate } from "../Utils";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -50,8 +56,10 @@ const ReqForm = ({
   addTableRow,
   handleTableRowChange,
   deleteTableRow,
+  approverOptions,
+  mailTemplateOptions,
+  handleOnChangeForMail,
 }) => {
-  const approverOptions = ["Person 1", "Person 2", "Person 3"]; // static now, later will fetch from backend
   const fieldTypeOptions = ["Text", "Number", "Email", "Date"]; // Add your field type options here
 
   return (
@@ -103,8 +111,7 @@ const ReqForm = ({
           </Select>
         </Grid>
 
-        <Grid item xs={12} sm={12} md={12}>
-          {/* Dynamic Approver Fields */}
+        {/* <Grid item xs={12} sm={12} md={12}>
           {inputValue.approvers.map((approver, index) => (
             <div key={index}>
               <InputLabel id={`approver${index + 1}`}>
@@ -113,24 +120,28 @@ const ReqForm = ({
               <Select
                 name={`approver${index + 1}`}
                 id={`approver${index + 1}`}
-                value={approver.name}
+                value={approver.userID}
                 onChange={(e) => handleApproverChange(index, e.target.value)}
                 fullWidth
                 displayEmpty
-                renderValue={(value) =>
-                  value ? value : <em>Choose person {index + 1} name</em>
+                renderValue={(userID) =>
+                  userID ? (
+                    approverOptions.find((opt) => opt.userID === userID)?.name
+                  ) : (
+                    <em>Choose Approver {index + 1} name</em>
+                  )
                 }
                 style={{ margin: "10px auto" }}
               >
                 {approverOptions.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
+                  <MenuItem key={option.userID} value={option.userID}>
+                    {option.name}
                   </MenuItem>
                 ))}
               </Select>
             </div>
           ))}
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12} sm={12} md={12}>
           <InputLabel id="emailTemplate" style={{ margin: "0.5rem auto" }}>
@@ -140,14 +151,26 @@ const ReqForm = ({
           <Select
             name="emailTemplate"
             id="emailTemplate"
-            value={inputValue.emailTemplate}
-            onChange={handleOnChange}
+            value={inputValue.emailTemplate.name}
+            onChange={handleOnChangeForMail}
             fullWidth
             displayEmpty
-            renderValue={(value) => (value ? value : <em>Choose an option</em>)}
+            renderValue={(value) => {
+              const selectedTemplate = mailTemplateOptions.find(
+                (option) => option._id === value
+              );
+              return selectedTemplate ? (
+                selectedTemplate.name
+              ) : (
+                <em>Choose an option</em>
+              );
+            }}
           >
-            <MenuItem value="template1">Template 1</MenuItem>
-            <MenuItem value="template2">Template 2</MenuItem>
+            {mailTemplateOptions.map((option) => (
+              <MenuItem key={option._id} value={option._id}>
+                {option.name}
+              </MenuItem>
+            ))}
           </Select>
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
@@ -161,14 +184,26 @@ const ReqForm = ({
           <Select
             name="remainderEmailTemplate"
             id="remainderEmailTemplate"
-            value={inputValue.remainderEmailTemplate}
-            onChange={handleOnChange}
+            value={inputValue.remainderEmailTemplate.name}
+            onChange={handleOnChangeForMail}
             fullWidth
             displayEmpty
-            renderValue={(value) => (value ? value : <em>Choose an option</em>)}
+            renderValue={(value) => {
+              const selectedTemplate = mailTemplateOptions.find(
+                (option) => option._id === value
+              );
+              return selectedTemplate ? (
+                selectedTemplate.name
+              ) : (
+                <em>Choose an option</em>
+              );
+            }}
           >
-            <MenuItem value="template1">Template 1</MenuItem>
-            <MenuItem value="template2">Template 2</MenuItem>
+            {mailTemplateOptions.map((option) => (
+              <MenuItem key={option._id} value={option._id}>
+                {option.name}
+              </MenuItem>
+            ))}
           </Select>
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
@@ -182,24 +217,42 @@ const ReqForm = ({
           <Select
             name="responseEmailTemplate"
             id="responseEmailTemplate"
-            value={inputValue.responseEmailTemplate}
-            onChange={handleOnChange}
+            value={inputValue.responseEmailTemplate.name}
+            onChange={handleOnChangeForMail}
             fullWidth
             displayEmpty
-            renderValue={(value) => (value ? value : <em>Choose an option</em>)}
+            renderValue={(value) => {
+              const selectedTemplate = mailTemplateOptions.find(
+                (option) => option._id === value
+              );
+              return selectedTemplate ? (
+                selectedTemplate.name
+              ) : (
+                <em>Choose an option</em>
+              );
+            }}
           >
-            <MenuItem value="template1">Template 1</MenuItem>
-            <MenuItem value="template2">Template 2</MenuItem>
+            {mailTemplateOptions.map((option) => (
+              <MenuItem key={option._id} value={option._id}>
+                {option.name}
+              </MenuItem>
+            ))}
           </Select>
         </Grid>
-        
-        <Grid item xs={12} sm={12} md={12} style={{ marginTop: "1rem" }} >
-          <Grid container alignItems="center" style={{ marginBottom: "0.7rem" }}>
+
+        <Grid item xs={12} sm={12} md={12} style={{ marginTop: "1rem" }}>
+          <Grid
+            container
+            alignItems="center"
+            style={{ marginBottom: "0.7rem" }}
+          >
             <Grid item xs={6}>
               <Typography variant="h6">Custom Input Fields</Typography>
             </Grid>
             <Grid item xs={6} textAlign="right">
-              <Button onClick={addTableRow} startIcon={<AddIcon />} >Add New Field</Button>
+              <Button onClick={addTableRow} startIcon={<AddIcon />}>
+                Add New Field
+              </Button>
             </Grid>
           </Grid>
 
@@ -228,7 +281,9 @@ const ReqForm = ({
                     }
                     fullWidth
                     displayEmpty
-                    renderValue={(value) => (value ? value : <em>Choose input type</em>)}
+                    renderValue={(value) =>
+                      value ? value : <em>Choose input type</em>
+                    }
                   >
                     {fieldTypeOptions.map((option) => (
                       <MenuItem key={option} value={option}>
@@ -239,7 +294,12 @@ const ReqForm = ({
                 </Grid>
 
                 <Grid item xs={2} style={{ marginBottom: "1rem" }}>
-                  <Button onClick={() => deleteTableRow(row.id)} startIcon={<DeleteIcon />} >Delete</Button>
+                  <Button
+                    onClick={() => deleteTableRow(row.id)}
+                    startIcon={<DeleteIcon />}
+                  >
+                    Delete
+                  </Button>
                 </Grid>
               </Grid>
             </React.Fragment>
@@ -261,6 +321,9 @@ function SimpleDialog({
   addTableRow,
   handleTableRowChange,
   deleteTableRow,
+  approverOptions,
+  mailTemplateOptions,
+  handleOnChangeForMail,
 }) {
   return (
     <BootstrapDialog
@@ -292,6 +355,9 @@ function SimpleDialog({
           addTableRow={addTableRow}
           handleTableRowChange={handleTableRowChange}
           deleteTableRow={deleteTableRow}
+          approverOptions={approverOptions}
+          mailTemplateOptions={mailTemplateOptions}
+          handleOnChangeForMail={handleOnChangeForMail}
         />
       </DialogContent>
       <DialogActions>
@@ -308,6 +374,71 @@ function SimpleDialog({
   );
 }
 
+const DisplayAllTemplates = ({ allData, handleCurrentOpened, handleEditCurrent }) => {
+  return (
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Sr. No.</TableCell>
+            <TableCell>Template Name</TableCell>
+            <TableCell>Level of Approvals</TableCell>
+            <TableCell>Last Modified On</TableCell>
+            <TableCell>Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {allData != undefined ? (
+            allData.map((data, index) => (
+              <TableRow
+                key={data.name}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell>{index + 1}</TableCell>
+                <TableCell component="th" scope="row">
+                  {data.name}
+                </TableCell>
+                <TableCell>{data.levelOfApproval}</TableCell>
+                <TableCell>
+                  {getDate(data?.updatedAt, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      handleCurrentOpened(data);
+                    }}
+                    startIcon={<VisibilityIcon />}
+                    sx={{ mr: 2 }}
+                  >
+                    View
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {handleEditCurrent(data);}}
+                    startIcon={<EditIcon />}
+                    sx={{ mr: 2 }}
+                  >
+                    Edit
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <p style={{ textAlign: "center" }}> No templates available. </p>
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
+
 const Templates = () => {
   const [inputValue, setInputValue] = useState({
     name: "",
@@ -318,6 +449,76 @@ const Templates = () => {
     approvers: [], // This will hold approver names based on level of approval
     tableRows: [], // This will hold the rows of the dynamic table
   });
+
+  const [approverOptions, setApproverOptions] = useState([]);
+  const [mailTemplateOptions, setMailTemplateOptions] = useState([]);
+  const [allTemplates, setAllTemplates] = useState([]);
+
+  const isUsersListFetched = useRef(false);
+  const isMailTemplatesFetched = useRef(false);
+  const isAllTemplatesFetched = useRef(false);
+
+  const fetchUsersList = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_REQUEST_URL}/users/list`
+      );
+      console.log(data);
+      const { success, message } = data;
+      if (success) {
+        isUsersListFetched.current = true;
+        setApproverOptions(data.data);
+      } else {
+        handleError(message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchMailTemplatesList = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_REQUEST_URL}/email_templates/fetch_list`
+      );
+      console.log(data);
+      const { success, message } = data;
+      if (success) {
+        isMailTemplatesFetched.current = true;
+        setMailTemplateOptions(data.data);
+      } else {
+        handleError(message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchTemplatesData = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_REQUEST_URL}/templates/fetch_all`
+      );
+      console.log(data);
+      const { success, message } = data;
+      if (success) {
+        isAllTemplatesFetched.current = true;
+        setAllTemplates(data.data);
+      } else {
+        handleError(message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!isUsersListFetched.current) fetchUsersList();
+
+    if (!isMailTemplatesFetched.current) fetchMailTemplatesList();
+
+    if (!isAllTemplatesFetched.current) fetchTemplatesData();
+  }, []);
 
   const handleError = (err) =>
     toast.error(err, {
@@ -350,14 +551,19 @@ const Templates = () => {
     }));
   };
 
-  const handleApproverChange = (index, value) => {
-    setInputValue((prevState) => ({
-      ...prevState,
-      approvers: prevState.approvers.map((approver, i) =>
-        i === index ? { ...approver, name: value } : approver
-      ),
-    }));
-  };
+  // const handleApproverChange = (index, userID) => {
+  //   const selectedApprover = approverOptions.find(
+  //     (opt) => opt.userID === userID
+  //   );
+  //   setInputValue((prevState) => ({
+  //     ...prevState,
+  //     approvers: prevState.approvers.map((approver, i) =>
+  //       i === index
+  //         ? { ...approver, userID, name: selectedApprover.name }
+  //         : approver
+  //     ),
+  //   }));
+  // };
 
   // add rows
   const addTableRow = () => {
@@ -389,25 +595,26 @@ const Templates = () => {
   };
 
   const handleSubmit = async (e) => {
-    // try {
-    //   const { data } = await axios.post(
-    //     `${process.env.REACT_APP_REQUEST_URL}/`,
-    //     {
-    //       ...inputValue,
-    //     },
-    //     { withCredentials: true }
-    //   );
-    //   console.log(data);
-    //   const { success, message } = data;
-    //   if (success) {
-    //     handleSuccess(message);
-    //     handleClose();
-    //   } else {
-    //     handleError(message);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_REQUEST_URL}/templates/create`,
+        {
+          ...inputValue,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
+      const { success, message } = data;
+      if (success) {
+        handleSuccess(message);
+        handleClose();
+      } else {
+        handleError(message);
+        handleClose();
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
     setInputValue({
       ...inputValue,
@@ -417,19 +624,72 @@ const Templates = () => {
       responseEmailTemplate: "",
       levelOfApproval: "",
       approvers: [],
-      tableRows: []
+      tableRows: [],
     });
   };
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
+
     setInputValue((prevInputValue) => ({
       ...prevInputValue,
       [name]: value,
     }));
   };
 
-  const [open, setOpen] = React.useState(false);
+  const handleOnChangeForMail = (e) => {
+    const { name, value } = e.target;
+
+    const selectedTemplate = mailTemplateOptions.find(
+      (option) => option._id === value
+    );
+
+    setInputValue((prevState) => ({
+      ...prevState,
+      [name]: {
+        id: selectedTemplate._id,
+        name: selectedTemplate.name,
+        category: selectedTemplate.category,
+      },
+    }));
+  };
+
+  const [open, setOpen] = useState(false);
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const [currentOpenedTemplate, setCurrentOpenedTemplate] = useState(false);
+  const [editCurrentTemplate, setEditCurrentTemplate] = useState(false);
+
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  useEffect(() => {
+    if (currentOpenedTemplate) {
+      setOpenDetailsDialog(true);
+    }
+  }, [currentOpenedTemplate]);
+
+  useEffect(() => {
+    if(editCurrentTemplate) {
+      setOpenEditDialog(true);
+    }
+  }, [editCurrentTemplate]);
+
+  const handleCurrentOpened = (data) => {
+    setCurrentOpenedTemplate(data);
+  };
+
+  const closeDetailDialogBox = () => {
+    setOpenDetailsDialog(false);
+    setCurrentOpenedTemplate(null); // Clear data
+  };
+
+  const handleEditCurrent = (data) => {
+    setEditCurrentTemplate(data);
+  }
+
+  const closeEditDialogBox = () => {
+    setOpenEditDialog(false);
+    setEditCurrentTemplate(null); // Clear data
+  }
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -440,12 +700,24 @@ const Templates = () => {
     setInputValue({
       ...inputValue,
       name: "",
-      emailTemplate: "",
-      remainderEmailTemplate: "",
-      responseEmailTemplate: "",
+      emailTemplate: {
+        id: "",
+        name: "",
+        category: "",
+      },
+      remainderEmailTemplate: {
+        id: "",
+        name: "",
+        category: "",
+      },
+      responseEmailTemplate: {
+        id: "",
+        name: "",
+        category: "",
+      },
       levelOfApproval: "",
       approvers: [],
-      tableRows: []
+      tableRows: [],
     });
   };
 
@@ -473,15 +745,37 @@ const Templates = () => {
         inputValue={inputValue}
         handleOnChange={handleOnChange}
         handleLevelOfApprovalChange={handleLevelOfApprovalChange}
-        handleApproverChange={handleApproverChange}
+        // handleApproverChange={handleApproverChange}
         addTableRow={addTableRow}
         handleTableRowChange={handleTableRowChange}
         deleteTableRow={deleteTableRow}
+        approverOptions={approverOptions}
+        mailTemplateOptions={mailTemplateOptions}
+        handleOnChangeForMail={handleOnChangeForMail}
       />
 
       <h1>All Templates</h1>
 
-      <div></div>
+      <div>
+        <DisplayAllTemplates
+          allData={allTemplates}
+          handleCurrentOpened={handleCurrentOpened}
+          handleEditCurrent={handleEditCurrent}
+        />
+        <ViewTemplateDetails
+          open={openDetailsDialog}
+          handleClose={closeDetailDialogBox}
+          data={currentOpenedTemplate}
+          mailOptions={mailTemplateOptions}
+        />
+
+        <EditTemplate
+          open={openEditDialog}
+          handleClose={closeEditDialogBox}
+          data={editCurrentTemplate}
+          mailOptions={mailTemplateOptions}
+        />
+      </div>
     </div>
   );
 };

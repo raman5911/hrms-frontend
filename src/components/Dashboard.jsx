@@ -30,8 +30,9 @@ import MailIcon from "@mui/icons-material/Mail";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
-import HomeIcon from '@mui/icons-material/Home';
-import DownloadIcon from '@mui/icons-material/Download';
+import HomeIcon from "@mui/icons-material/Home";
+import DownloadIcon from "@mui/icons-material/Download";
+import GroupIcon from '@mui/icons-material/Group';
 
 import Attendance from "./Attendance";
 import Reports from "./Reports";
@@ -240,6 +241,20 @@ const Dashboard = () => {
         <List>
           <ListItem
             onClick={() => {
+              navigate("/");
+            }}
+            disablePadding
+          >
+            <ListItemButton>
+              <ListItemIcon>
+                <GroupIcon />
+              </ListItemIcon>
+              <ListItemText primary="Users" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem
+            onClick={() => {
               navigate("/dashboard");
             }}
             disablePadding
@@ -251,7 +266,7 @@ const Dashboard = () => {
               <ListItemText primary="Dashboard" />
             </ListItemButton>
           </ListItem>
-          
+
           <ListItem
             onClick={() => {
               navigate("/dashboard/attendance");
