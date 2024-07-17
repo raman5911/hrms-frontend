@@ -40,8 +40,12 @@ import Request from "./Request";
 import Profile from "./Profile";
 import Templates from "./Templates";
 
+import './listItem.css';
+
 const Dashboard = () => {
   const drawerWidth = 240;
+
+  const isActive = (path) => location.pathname === path;
 
   const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
     ({ theme, open }) => ({
@@ -243,6 +247,7 @@ const Dashboard = () => {
             onClick={() => {
               navigate("/");
             }}
+            className={`${isActive("/") && "active"}`}
             disablePadding
           >
             <ListItemButton>
@@ -257,6 +262,7 @@ const Dashboard = () => {
             onClick={() => {
               navigate("/dashboard");
             }}
+            className={`${isActive("/dashboard") && "active"}`}
             disablePadding
           >
             <ListItemButton>
@@ -271,6 +277,7 @@ const Dashboard = () => {
             onClick={() => {
               navigate("/dashboard/attendance");
             }}
+            className={`${isActive("/dashboard/attendance") && "active"}`}
             disablePadding
           >
             <ListItemButton>
@@ -285,6 +292,7 @@ const Dashboard = () => {
             onClick={() => {
               navigate("/dashboard/reports");
             }}
+            className={`${isActive("/dashboard/reports") && "active"}`}
             disablePadding
           >
             <ListItemButton>
@@ -299,6 +307,7 @@ const Dashboard = () => {
             onClick={() => {
               navigate("/dashboard/templates");
             }}
+            className={`${isActive("/dashboard/templates") && "active"}`}
             disablePadding
           >
             <ListItemButton>
@@ -313,6 +322,7 @@ const Dashboard = () => {
             onClick={() => {
               navigate("/dashboard/requests", { state: { user: user } });
             }}
+            className={`${isActive("/dashboard/requests") && "active"}`}
             disablePadding
           >
             <ListItemButton>
@@ -327,6 +337,7 @@ const Dashboard = () => {
             onClick={() => {
               navigate("/dashboard/profile");
             }}
+            className={`${isActive("/dashboard/profile") && "active"}`}
             disablePadding
           >
             <ListItemButton>
