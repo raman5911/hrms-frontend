@@ -89,13 +89,13 @@ const Form = ({
             >
               *
             </span>{" "}
-            <Button
+            {/* <Button
               onClick={addTableRow}
               startIcon={<AddIcon />}
               style={{ marginLeft: "1rem" }}
             >
               Add
-            </Button>
+            </Button> */}
           </p>
         </label>
 
@@ -119,7 +119,7 @@ const Form = ({
                     }}
                   />
                   <Grid xs={6} item>
-                    <Button
+                    {/* <Button
                       onClick={() => {
                         deleteTableRow(row.id);
                       }}
@@ -128,7 +128,7 @@ const Form = ({
                       disabled={inputValue.leaves.length < 2}
                     >
                       Delete
-                    </Button>
+                    </Button> */}
                   </Grid>
                 </Grid>
               </Grid>
