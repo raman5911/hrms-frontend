@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
@@ -32,6 +32,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 const options = ["Assets will be displayed here", "Laptop", "Smartphone"];
 function SimpleDialog({ open, onClose }) {
+  const [text, setText] = useState(""); // Initialize state with an empty string
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
   const openMenu = Boolean(anchorEl);
@@ -44,6 +45,9 @@ function SimpleDialog({ open, onClose }) {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const handleChange = (event) => {
+    setText(event.target.value);
   };
   return (
     <BootstrapDialog
@@ -143,6 +147,8 @@ function SimpleDialog({ open, onClose }) {
             fullWidth
             margin="normal"
             required
+            value={text} // Bind the text field's value to the state
+            onChange={handleChange}
           />
         </Box>
       </DialogContent>
