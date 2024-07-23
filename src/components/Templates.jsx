@@ -31,6 +31,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ViewTemplateDetails from "./ViewTemplateDetails";
 import EditTemplate from "./EditTemplate";
 
+import './templates.css'
 import { getDate } from "../Utils";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -733,7 +734,7 @@ const Templates = () => {
         style={{
           position: "absolute",
           right: "10px",
-          top: "60px",
+          top: "45px",
         }}
       >
         Create New Template
@@ -754,7 +755,7 @@ const Templates = () => {
         handleOnChangeForMail={handleOnChangeForMail}
       />
 
-      <h1>All Templates</h1>
+      <h2 className="templates">All Templates</h2>
 
       <div>
         <DisplayAllTemplates

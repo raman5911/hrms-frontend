@@ -21,6 +21,7 @@ import Divider from "@mui/material/Divider";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import { DisplayRequestedToMe, DisplayAppliedByMe } from "./DisplayRequest";
+import './requests.css'
 
 import {
   Leave,
@@ -361,8 +362,8 @@ function Request() {
         endIcon={<KeyboardArrowDownIcon />}
         style={{
           position: "absolute",
-          right: "10px",
-          top: "60px",
+          right: "19px",
+          top: "32px",
         }}
       >
         Apply For
@@ -441,11 +442,11 @@ function Request() {
         // handleOnChange={handleOnChange}
       /> */}
 
-      <h3>Requested to You</h3>
+      <h3 className="requested">Requested to You</h3>
 
       <DisplayRequestedToMe requestsData={req_to_me} />
 
-      <h3>Applied by you</h3>
+      <h3 className="requests">Applied by you</h3>
 
       <DisplayAppliedByMe requestsData={my_requests} />
 
