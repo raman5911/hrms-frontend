@@ -412,14 +412,14 @@ function Request() {
         >
           Repair Asset
         </MenuItem>
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             handleCloseMenu("complain_asset");
           }}
           disableRipple
         >
           Complain for Asset
-        </MenuItem>
+        </MenuItem> */}
 
         <Divider sx={{ my: 0.5 }} />
 

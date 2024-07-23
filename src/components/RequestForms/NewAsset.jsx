@@ -7,8 +7,14 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
-import { Typography } from "@mui/material";
+import { KeyboardArrowDown } from "@mui/icons-material";
+import { ListItemSecondaryAction } from "@mui/material";
+
+import { Box, List, Menu, TextField, Typography } from "@mui/material";
+import MenuItem from "@mui/material/MenuItem";
+
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -24,8 +30,21 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     maxWidth: "none", // Override default maxWidth
   },
 }));
-
+const options = ["Assets will be displayed here", "Laptop", "Smartphone"];
 function SimpleDialog({ open, onClose }) {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const openMenu = Boolean(anchorEl);
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    setAnchorEl(null);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   return (
     <BootstrapDialog
       onClose={onClose}
@@ -47,7 +66,86 @@ function SimpleDialog({ open, onClose }) {
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent dividers>hello</DialogContent>
+      <DialogContent dividers>
+        <Box
+          component="form"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Choose Asset
+          </Typography>
+          <List
+            component="nav"
+            aria-label="Device settings"
+            sx={{
+              bgcolor: "",
+              border: "1px solid rgba(0, 0, 0, 0.12)",
+              borderRadius: "4px",
+            }}
+          >
+            <ListItemButton
+              id="lock-button"
+              aria-haspopup="listbox"
+              aria-controls="lock-menu"
+              aria-expanded={openMenu ? "true" : undefined}
+              onClick={handleClickListItem}
+            >
+              <ListItemText
+                primary={
+                  selectedIndex === null ? "Options" : options[selectedIndex]
+                }
+              />
+              <ListItemSecondaryAction>
+                <KeyboardArrowDown />
+              </ListItemSecondaryAction>
+            </ListItemButton>
+          </List>
+          <Menu
+            id="lock-menu"
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "lock-button",
+              role: "listbox",
+              sx: {
+                border: "1px solid rgba(0, 0, 0, 0.12)", // Add a light border
+                borderRadius: "4px", // Optional: rounds the corners
+              },
+            }}
+          >
+            {options.map((option, index) => (
+              <MenuItem
+                key={option}
+                disabled={index === 0}
+                selected={index === selectedIndex}
+                onClick={(event) => handleMenuItemClick(event, index)}
+              >
+                {option}
+              </MenuItem>
+            ))}
+          </Menu>
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Reason for Issue
+          </Typography>
+          <TextField
+            id="outlined-search-reason"
+            label="Reason"
+            type="search"
+            multiline
+            minRows={6}
+            fullWidth
+            margin="normal"
+            required
+          />
+        </Box>
+      </DialogContent>
       <DialogActions>
         <Button
           autoFocus
