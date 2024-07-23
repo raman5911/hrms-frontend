@@ -39,8 +39,11 @@ import Reports from "./Reports";
 import Request from "./Request";
 import Profile from "./Profile";
 import Templates from "./Templates";
+//  import '../App.css';
 
 import './listItem.css';
+import './dashboard.css'
+
 
 const Dashboard = () => {
   const drawerWidth = 240;
@@ -351,7 +354,7 @@ const Dashboard = () => {
 
         {/* <Divider /> */}
       </Drawer>
-      <Main open={open}>
+      <Main open={open} className="dashboards">
         <Routes>
           <Route path="attendance" element={<Attendance />} />
           <Route path="reports" element={<Reports />} />

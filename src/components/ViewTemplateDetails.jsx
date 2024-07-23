@@ -10,6 +10,7 @@ import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import { Typography } from "@mui/material";
 import { getDate } from "../Utils";
+import './view-templates.css';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -52,43 +53,92 @@ function SimpleDialog({ onClose, open, data, mailOptions }) {
         <CloseIcon />
       </IconButton>
       <DialogContent dividers>
-        <Typography>Template Name: {data?.name}</Typography>        
-        <Typography>Level of Approval: {data?.levelOfApproval}</Typography>
-        <Typography>
+       
+       
+       {/* <Typography >Template Name: {data?.name}</Typography>
+        <Typography >Level of Approval: {data?.levelOfApproval}</Typography>
+       <Typography >
           Email Template Name:{" "}
           {data !== undefined ? findSelectedMailOpt(data?.emailTemplate) : ""}
         </Typography>
-        <Typography>
+      
+       <Typography>
           Remainder Email Template Name:{" "}
+          
           {data !== undefined
             ? findSelectedMailOpt(data?.remainderEmailTemplate)
             : ""}
         </Typography>
-        <Typography>
+        <Typography >
           Response Email Template Name:{" "}
           {data !== undefined
             ? findSelectedMailOpt(data?.responseEmailTemplate)
             : ""}
         </Typography>
-
-        <br />
+    
         
-        {data?.tableRows?.length > 0 && <Typography variant="h6">Custom Fields</Typography>}
-        <Typography>
+        {data?.tableRows?.length > 0 && <Typography variant="h6" className="template-class" >Custom Fields</Typography>}
+        <Typography >
           {data?.tableRows?.length > 0
             ? data?.tableRows.map((row, index) => (
                 <div style={{ display: "flex" }}>
-                  <Typography>Field Name: {row.fieldName}</Typography>
+                 <Typography >Field Name: {row.fieldName}</Typography>
                   <Typography style={{ marginLeft: "5rem" }}>
                     Field Type: {row.fieldType}
                   </Typography>
                 </div>
               ))
             : ""}
-        </Typography>
+        </Typography> */}
         
-        <br /><br />
-        <Typography>
+        <center>
+        <table border="1" cellpadding="5" width="700" height="300">
+  <tr>
+    <th colspan="2">Template Details</th>
+  </tr>
+  <tr>
+    <td>Template Name:</td>
+    <td>{data?.name}</td>
+  </tr>
+  <tr>
+    <td>Level of Approval:</td>
+    <td>{data?.levelOfApproval}</td>
+  </tr>
+  <tr>
+    <td>Email Template Name:</td>
+    <td>{data !== undefined ? findSelectedMailOpt(data?.emailTemplate) : ""}</td>
+  </tr>
+  <tr>
+    <td>Remainder Email Template Name:</td>
+    <td>{data !== undefined ? findSelectedMailOpt(data?.remainderEmailTemplate) : ""}</td>
+  </tr>
+  <tr>
+    <td>Response Email Template Name:</td>
+    <td>{data !== undefined ? findSelectedMailOpt(data?.responseEmailTemplate) : ""}</td>
+  </tr>
+  <tr>
+    <th colspan="2">Custom Fields</th>
+  </tr>
+  {data?.tableRows?.length > 0 ? (
+    data?.tableRows.map((row, index) => (
+      <tr key={index}>
+        <td>Field Name: {row.fieldName}</td>
+        <td>Field Type: {row.fieldType}</td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colspan="2">No custom fields</td>
+    </tr>
+  )}
+</table>
+</center>
+       
+       
+       
+       
+       
+        {/* <Typography > 
           Created on:{" "}
           {getDate(data?.createdAt, {
             year: "numeric",
@@ -104,7 +154,37 @@ function SimpleDialog({ onClose, open, data, mailOptions }) {
             day: "numeric",
             hour: "2-digit",
             minute: "2-digit",
-          })}</Typography>
+          })}</Typography> */}
+          <center>
+
+<table border="1" cellpadding="5" width="700" className="table-second">
+  <tr>
+    <td>Created on:</td>
+    <td>
+      {getDate(data?.createdAt, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}
+    </td>
+  </tr>
+  <tr>
+    <td>Modified on:</td>
+    <td>
+      {getDate(data?.updatedAt, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}
+    </td>
+  </tr>
+</table>
+</center>
+
       </DialogContent>
       <DialogActions>
         <Button
