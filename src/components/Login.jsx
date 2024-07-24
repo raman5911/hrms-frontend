@@ -67,7 +67,7 @@ const Login = () => {
       if (success) {
         handleSuccess(message);
         setTimeout(() => {
-          navigate("/", { state: { user: data.user } });
+          navigate("/dashboard", { state: { user: data.user } });
         }, 1000);
       } else {
         handleError(message);

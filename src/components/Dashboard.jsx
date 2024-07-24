@@ -41,6 +41,7 @@ import Profile from "./Profile";
 import Templates from "./Templates";
 
 import './listItem.css';
+import Users from "./Users";
 
 const Dashboard = () => {
   const drawerWidth = 240;
@@ -143,7 +144,9 @@ const Dashboard = () => {
         navigate("/login");
       }
     };
-    verifyCookie();
+    
+    // verifyCookie();
+
     // navigate("/dashboard", { state: { user: user }});
   }, [cookies, navigate, removeCookie]);
 
@@ -245,9 +248,9 @@ const Dashboard = () => {
         <List>
           <ListItem
             onClick={() => {
-              navigate("/");
+              navigate("/dashboard/users");
             }}
-            className={`${isActive("/") && "active"}`}
+            className={`${isActive("/dashboard/users") && "active"}`}
             disablePadding
           >
             <ListItemButton>
@@ -358,6 +361,7 @@ const Dashboard = () => {
           <Route path="requests" element={<Request />} />
           <Route path="templates" element={<Templates />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="users" element={<Users />} />
         </Routes>
 
         <ToastContainer />
