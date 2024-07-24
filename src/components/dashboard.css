@@ -2,3 +2,9 @@
     margin:20px 30px 20px;
   
  }
+
+ .MuiMenu-paper{
+    right: 23px;
+    left: 89% !important;
+    top: 50px !important;
+ }
