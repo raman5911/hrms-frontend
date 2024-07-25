@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
@@ -8,6 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
 import { KeyboardArrowDown } from "@mui/icons-material";
+import { handlePostRequest } from "../../Utils";
 import {
   ListItemSecondaryAction,
   Box,
@@ -19,6 +20,9 @@ import {
 import MenuItem from "@mui/material/MenuItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import { toast } from "react-toastify";
+
+const options = ["Assets will be displayed here", "Laptop", "Smartphone"];
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -34,24 +38,28 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const options = ["Assets will be displayed here", "Laptop", "Smartphone"];
-
-function SimpleDialog({ open, onClose }) {
-  const [text, setText] = useState("");
+function SimpleDialog({
+  open,
+  onClose,
+  inputValue,
+  handleOnChange,
+  handleSubmit,
+  clearState,
+  handleBlur,
+  touched,
+  errors,
+}) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(1);
   const openMenu = Boolean(anchorEl);
 
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleChange = (event) => {
-    setText(event.target.value);
-  };
-
   const handleMenuItemClick = (event, index) => {
-    setSelectedIndex(index);
+    handleOnChange({
+      target: { name: "selectedAsset", value: options[index] },
+    });
     setAnchorEl(null);
   };
 
@@ -69,7 +77,10 @@ function SimpleDialog({ open, onClose }) {
         Apply For New Asset
         <IconButton
           aria-label="close"
-          onClick={onClose}
+          onClick={() => {
+            onClose();
+            clearState();
+          }}
           sx={{
             position: "absolute",
             right: 8,
@@ -109,7 +120,7 @@ function SimpleDialog({ open, onClose }) {
               aria-expanded={openMenu ? "true" : undefined}
               onClick={handleClickListItem}
             >
-              <ListItemText primary={options[selectedIndex]} />
+              <ListItemText primary={inputValue.selectedAsset} />
               <ListItemSecondaryAction>
                 <KeyboardArrowDown />
               </ListItemSecondaryAction>
@@ -133,7 +144,7 @@ function SimpleDialog({ open, onClose }) {
               <MenuItem
                 key={option}
                 disabled={index === 0}
-                selected={index === selectedIndex}
+                selected={option === inputValue.selectedAsset}
                 onClick={(event) => handleMenuItemClick(event, index)}
               >
                 {option}
@@ -145,6 +156,7 @@ function SimpleDialog({ open, onClose }) {
           </Typography>
           <TextField
             id="outlined-search-reason"
+            name="reason"
             label="Reason"
             type="search"
             multiline
@@ -152,15 +164,22 @@ function SimpleDialog({ open, onClose }) {
             fullWidth
             margin="normal"
             required
-            value={text} // Bind the text field's value to the state
-            onChange={handleChange} // Update the state when the text field changes
+            value={inputValue.reason}
+            onChange={handleOnChange}
+            onBlur={() => handleBlur("reason")}
+            error={touched.reason && !!errors.reason}
+            helperText={touched.reason && errors.reason}
           />
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={onClose}>
-          {" "}
-          {/* Call onClose when the button is clicked */}
+        <Button
+          autoFocus
+          onClick={() => {
+            handleSubmit();
+            clearState();
+          }}
+        >
           Apply
         </Button>
       </DialogActions>
@@ -169,9 +188,95 @@ function SimpleDialog({ open, onClose }) {
 }
 
 function NewAsset({ open, handleClose }) {
+  const [inputValue, setInputValue] = useState({
+    selectedAsset: options[1],
+    reason: "",
+  });
+
+  const [touched, setTouched] = useState({
+    reason: false,
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setInputValue((prevInputValue) => ({
+      ...prevInputValue,
+      [name]: value,
+    }));
+  };
+
+  const handleBlur = (field) => {
+    setTouched((prevTouched) => ({
+      ...prevTouched,
+      [field]: true,
+    }));
+
+    validateField(field);
+  };
+
+  const validateField = (field) => {
+    let fieldErrors = {};
+    if (field === "reason" && !inputValue.reason) {
+      fieldErrors.reason = "This field is required";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      ...fieldErrors,
+    }));
+  };
+
+  const clearState = () => {
+    setInputValue({
+      selectedAsset: options[1],
+      reason: "",
+    });
+
+    setTouched({
+      reason: false,
+    });
+
+    setErrors({});
+  };
+
+  const handleError = (err) =>
+    toast.error(err, {
+      position: "bottom-left",
+    });
+  const handleSuccess = (msg) =>
+    toast.success(msg, {
+      position: "bottom-left",
+    });
+
+  const handleSubmit = async () => {
+    handlePostRequest(
+      `templates/create`,
+      inputValue,
+      handleSuccess,
+      handleError
+    );
+    handleClose();
+    clearState();
+  };
+
   return (
     <div>
-      <SimpleDialog open={open} onClose={handleClose} />
+      <SimpleDialog
+        open={open}
+        onClose={() => {
+          handleClose();
+          clearState();
+        }}
+        inputValue={inputValue}
+        handleOnChange={handleOnChange}
+        handleSubmit={handleSubmit}
+        clearState={clearState}
+        handleBlur={handleBlur}
+        touched={touched}
+        errors={errors}
+      />
     </div>
   );
 }
