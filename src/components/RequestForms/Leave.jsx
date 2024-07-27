@@ -7,7 +7,6 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
 import { Box, Grid, Typography, TextField } from "@mui/material";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
@@ -228,7 +227,9 @@ const Form = ({
               {...{ inputProps: { "aria-label": "Half Day" } }}
               onClick={onClickCheckbox}
               checked={halfDay}
-              disabled={inputValue.leaves.length > 1 || inputValue.numOfDays > 1}
+              disabled={
+                inputValue.leaves.length > 1 || inputValue.numOfDays > 1
+              }
             />
           }
           label="Half Day"
@@ -407,7 +408,10 @@ function Leave({ open, handleClose }) {
   };
 
   useEffect(() => {
-    if (inputValue.leaves.length > 1 || inputValue.leaves[0].startDate && inputValue.leaves[0].endDate) {
+    if (
+      inputValue.leaves.length > 1 ||
+      (inputValue.leaves[0].startDate && inputValue.leaves[0].endDate)
+    ) {
       const start = dayjs(inputValue.leaves[0].startDate);
       const end = dayjs(inputValue.leaves[0].endDate);
       const diff = end.diff(start, "day");
@@ -432,7 +436,12 @@ function Leave({ open, handleClose }) {
         numOfDays: 0,
       }));
     }
-  }, [inputValue.leaves, inputValue.numOfDays, halfDay, inputValue.leaves.length]);
+  }, [
+    inputValue.leaves,
+    inputValue.numOfDays,
+    halfDay,
+    inputValue.leaves.length,
+  ]);
 
   const checkBalanceEnoughOrNot = (type) => {
     if (type === "sick") {
@@ -555,12 +564,12 @@ function Leave({ open, handleClose }) {
       console.log(data);
       const { success, message } = data;
 
-      const newTouched = {
-        date: false,
-        leaveType: false,
-        reason: false,
-      };
-      setTouched(newTouched);
+      // const newTouched = {
+      //   date: false,
+      //   leaveType: false,
+      //   reason: false,
+      // };
+      // setTouched(newTouched);
 
       if (success) {
         handleSuccess(message);

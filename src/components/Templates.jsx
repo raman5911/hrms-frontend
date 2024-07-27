@@ -31,7 +31,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ViewTemplateDetails from "./ViewTemplateDetails";
 import EditTemplate from "./EditTemplate";
 
-import './templates.css'
+import "./templates.css";
 import { getDate } from "../Utils";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -375,7 +375,11 @@ function SimpleDialog({
   );
 }
 
-const DisplayAllTemplates = ({ allData, handleCurrentOpened, handleEditCurrent }) => {
+const DisplayAllTemplates = ({
+  allData,
+  handleCurrentOpened,
+  handleEditCurrent,
+}) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -422,7 +426,9 @@ const DisplayAllTemplates = ({ allData, handleCurrentOpened, handleEditCurrent }
                   </Button>
                   <Button
                     variant="outlined"
-                    onClick={() => {handleEditCurrent(data);}}
+                    onClick={() => {
+                      handleEditCurrent(data);
+                    }}
                     startIcon={<EditIcon />}
                     sx={{ mr: 2 }}
                   >
@@ -669,7 +675,7 @@ const Templates = () => {
   }, [currentOpenedTemplate]);
 
   useEffect(() => {
-    if(editCurrentTemplate) {
+    if (editCurrentTemplate) {
       setOpenEditDialog(true);
     }
   }, [editCurrentTemplate]);
@@ -685,12 +691,12 @@ const Templates = () => {
 
   const handleEditCurrent = (data) => {
     setEditCurrentTemplate(data);
-  }
+  };
 
   const closeEditDialogBox = () => {
     setOpenEditDialog(false);
     setEditCurrentTemplate(null); // Clear data
-  }
+  };
 
   const handleClickOpen = () => {
     setOpen(true);

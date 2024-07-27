@@ -7,14 +7,9 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
-import { KeyboardArrowDown } from "@mui/icons-material";
-import { ListItemSecondaryAction } from "@mui/material";
-
-import { Box, List, Menu, TextField, Typography } from "@mui/material";
-import MenuItem from "@mui/material/MenuItem";
-
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
+import { Box, TextField, Typography } from "@mui/material";
+import { toast } from "react-toastify";
+import { handlePostRequest } from "../../Utils";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -24,41 +19,24 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
   "& .MuiPaper-root": {
-    // Apply styles to the Dialog's Paper component
-    width: "800px", // Set your desired width
-    height: "600px", // Set your desired height
-    maxWidth: "none", // Override default maxWidth
+    width: "800px",
+    height: "600px",
+    maxWidth: "none",
   },
 }));
-const options = ["Assets will be displayed here", "Laptop", "Smartphone"];
-function SimpleDialog({ open, onClose }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
-  const openMenu = Boolean(anchorEl);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [titleError, setTitleError] = useState(false);
-  const [descriptionError, setDescriptionError] = useState(false);
 
-  const handleApply = () => {
-    setTitleError(!title);
-    setDescriptionError(!description);
-
-    if (title && description) {
-      // Perform your apply action here
-      onClose();
-    }
-  };
-  const handleClickListItem = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleMenuItemClick = (event, index) => {
-    setSelectedIndex(index);
-    setAnchorEl(null);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+function SimpleDialog({
+  open,
+  onClose,
+  inputValue,
+  handleOnChange,
+  handleSubmit,
+  clearState,
+  anchorEl,
+  handleMenuClose,
+  handleBlur,
+  touched,
+}) {
   return (
     <BootstrapDialog
       onClose={onClose}
@@ -68,7 +46,10 @@ function SimpleDialog({ open, onClose }) {
       <DialogTitle id="customized-dialog-title">Request to HR</DialogTitle>
       <IconButton
         aria-label="close"
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+          clearState();
+        }}
         sx={{
           position: "absolute",
           right: 8,
@@ -93,22 +74,27 @@ function SimpleDialog({ open, onClose }) {
             Subject
           </Typography>
           <TextField
-            id="outlined-search-reason"
+            id="outlined-search-title"
+            name="title"
             label="Title"
             type="search"
             fullWidth
             margin="normal"
             required
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            error={titleError}
-            helperText={titleError ? "This field is required" : ""}
+            value={inputValue.title}
+            onChange={handleOnChange}
+            onBlur={handleBlur}
+            error={touched.title && !inputValue.title}
+            helperText={
+              touched.title && !inputValue.title ? "This field is required" : ""
+            }
           />
           <Typography variant="h6" sx={{ mt: 2 }}>
             Request
           </Typography>
           <TextField
-            id="outlined-search-reason"
+            id="outlined-search-description"
+            name="description"
             label="Describe"
             type="search"
             multiline
@@ -116,25 +102,117 @@ function SimpleDialog({ open, onClose }) {
             fullWidth
             margin="normal"
             required
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            error={descriptionError}
-            helperText={descriptionError ? "This field is required" : ""}
+            value={inputValue.description}
+            onChange={handleOnChange}
+            onBlur={handleBlur}
+            error={touched.description && !inputValue.description}
+            helperText={
+              touched.description && !inputValue.description
+                ? "This field is required"
+                : ""
+            }
           />
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleApply}>
+        <Button autoFocus onClick={handleSubmit}>
           Apply
         </Button>
       </DialogActions>
     </BootstrapDialog>
   );
 }
+
 function RequestHR({ open, handleClose }) {
+  const [inputValue, setInputValue] = useState({
+    title: "",
+    description: "",
+  });
+
+  const [touched, setTouched] = useState({
+    title: false,
+    description: false,
+  });
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setInputValue((prevInputValue) => ({
+      ...prevInputValue,
+      [name]: value,
+    }));
+  };
+
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched((prevTouched) => ({
+      ...prevTouched,
+      [name]: true,
+    }));
+  };
+
+  const clearState = () => {
+    setInputValue({
+      title: "",
+      description: "",
+    });
+    setTouched({
+      title: false,
+      description: false,
+    });
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleError = (err) =>
+    toast.error(err, {
+      position: "bottom-left",
+    });
+  const handleSuccess = (msg) =>
+    toast.success(msg, {
+      position: "bottom-left",
+    });
+
+  const handleSubmit = async () => {
+    if (!inputValue.title || !inputValue.description) {
+      setTouched({
+        title: true,
+        description: true,
+      });
+      return;
+    }
+
+    handlePostRequest(
+      `${process.env.REACT_APP_REQUEST_URL}/templates/create`,
+      inputValue,
+      handleSuccess,
+      handleError
+    );
+    handleClose();
+
+    clearState();
+  };
+
   return (
     <div>
-      <SimpleDialog open={open} onClose={handleClose} />
+      <SimpleDialog
+        open={open}
+        onClose={() => {
+          handleClose();
+          clearState();
+        }}
+        inputValue={inputValue}
+        handleOnChange={handleOnChange}
+        handleSubmit={handleSubmit}
+        clearState={clearState}
+        anchorEl={anchorEl}
+        handleMenuClose={handleMenuClose}
+        handleBlur={handleBlur}
+        touched={touched}
+      />
     </div>
   );
 }

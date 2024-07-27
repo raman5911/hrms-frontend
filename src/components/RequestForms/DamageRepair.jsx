@@ -8,13 +8,21 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
 import { KeyboardArrowDown } from "@mui/icons-material";
-import { ListItemSecondaryAction } from "@mui/material";
-
-import { Box, List, Menu, TextField, Typography } from "@mui/material";
+import { handlePostRequest } from "../../Utils";
+import {
+  ListItemSecondaryAction,
+  Box,
+  List,
+  Menu,
+  TextField,
+  Typography,
+} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
-
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import { toast } from "react-toastify";
+
+const options = ["Assets will be displayed here", "Laptop", "Smartphone"];
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -24,31 +32,41 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
   "& .MuiPaper-root": {
-    // Apply styles to the Dialog's Paper component
-    width: "800px", // Set your desired width
-    height: "600px", // Set your desired height
-    maxWidth: "none", // Override default maxWidth
+    width: "800px",
+    height: "600px",
+    maxWidth: "none",
   },
 }));
-const options = ["Assets will be displayed here", "Laptop", "Smartphone"];
-function SimpleDialog({ open, onClose }) {
-  const [text, setText] = useState(""); // Initialize state with an empty string
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+function SimpleDialog({
+  open,
+  onClose,
+  inputValue,
+  handleOnChange,
+  handleSubmit,
+  clearState,
+  handleBlur,
+  touched,
+  errors,
+}) {
+  const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
+
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleMenuItemClick = (event, index) => {
-    setSelectedIndex(index);
+    handleOnChange({
+      target: { name: "selectedAsset", value: options[index] },
+    });
     setAnchorEl(null);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleChange = (event) => {
-    setText(event.target.value);
-  };
+
   return (
     <BootstrapDialog
       onClose={onClose}
@@ -56,20 +74,23 @@ function SimpleDialog({ open, onClose }) {
       open={open}
     >
       <DialogTitle id="customized-dialog-title">
-        Apply for Repairing of Asset
+        Apply For New Asset
+        <IconButton
+          aria-label="close"
+          onClick={() => {
+            onClose();
+            clearState();
+          }}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={onClose}
-        sx={{
-          position: "absolute",
-          right: 8,
-          top: 8,
-          color: (theme) => theme.palette.grey[500],
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
       <DialogContent dividers>
         <Box
           component="form"
@@ -88,7 +109,6 @@ function SimpleDialog({ open, onClose }) {
             component="nav"
             aria-label="Device settings"
             sx={{
-              bgcolor: "",
               border: "1px solid rgba(0, 0, 0, 0.12)",
               borderRadius: "4px",
             }}
@@ -100,11 +120,7 @@ function SimpleDialog({ open, onClose }) {
               aria-expanded={openMenu ? "true" : undefined}
               onClick={handleClickListItem}
             >
-              <ListItemText
-                primary={
-                  selectedIndex === null ? "Options" : options[selectedIndex]
-                }
-              />
+              <ListItemText primary={inputValue.selectedAsset} />
               <ListItemSecondaryAction>
                 <KeyboardArrowDown />
               </ListItemSecondaryAction>
@@ -119,8 +135,8 @@ function SimpleDialog({ open, onClose }) {
               "aria-labelledby": "lock-button",
               role: "listbox",
               sx: {
-                border: "1px solid rgba(0, 0, 0, 0.12)", // Add a light border
-                borderRadius: "4px", // Optional: rounds the corners
+                border: "1px solid rgba(0, 0, 0, 0.12)",
+                borderRadius: "4px",
               },
             }}
           >
@@ -128,7 +144,7 @@ function SimpleDialog({ open, onClose }) {
               <MenuItem
                 key={option}
                 disabled={index === 0}
-                selected={index === selectedIndex}
+                selected={option === inputValue.selectedAsset}
                 onClick={(event) => handleMenuItemClick(event, index)}
               >
                 {option}
@@ -140,6 +156,7 @@ function SimpleDialog({ open, onClose }) {
           </Typography>
           <TextField
             id="outlined-search-reason"
+            name="reason"
             label="Describe Your Issue"
             type="search"
             multiline
@@ -147,8 +164,11 @@ function SimpleDialog({ open, onClose }) {
             fullWidth
             margin="normal"
             required
-            value={text} // Bind the text field's value to the state
-            onChange={handleChange}
+            value={inputValue.reason}
+            onChange={handleOnChange}
+            onBlur={() => handleBlur("reason")}
+            error={touched.reason && !!errors.reason}
+            helperText={touched.reason && errors.reason}
           />
         </Box>
       </DialogContent>
@@ -156,7 +176,8 @@ function SimpleDialog({ open, onClose }) {
         <Button
           autoFocus
           onClick={() => {
-            //   onClose();
+            handleSubmit();
+            clearState();
           }}
         >
           Apply
@@ -166,12 +187,98 @@ function SimpleDialog({ open, onClose }) {
   );
 }
 
-function DamageRepair({ open, handleClose }) {
+function NewAsset({ open, handleClose }) {
+  const [inputValue, setInputValue] = useState({
+    selectedAsset: options[1],
+    reason: "",
+  });
+
+  const [touched, setTouched] = useState({
+    reason: false,
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setInputValue((prevInputValue) => ({
+      ...prevInputValue,
+      [name]: value,
+    }));
+  };
+
+  const handleBlur = (field) => {
+    setTouched((prevTouched) => ({
+      ...prevTouched,
+      [field]: true,
+    }));
+
+    validateField(field);
+  };
+
+  const validateField = (field) => {
+    let fieldErrors = {};
+    if (field === "reason" && !inputValue.reason) {
+      fieldErrors.reason = "This field is required";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      ...fieldErrors,
+    }));
+  };
+
+  const clearState = () => {
+    setInputValue({
+      selectedAsset: options[1],
+      reason: "",
+    });
+
+    setTouched({
+      reason: false,
+    });
+
+    setErrors({});
+  };
+
+  const handleError = (err) =>
+    toast.error(err, {
+      position: "bottom-left",
+    });
+  const handleSuccess = (msg) =>
+    toast.success(msg, {
+      position: "bottom-left",
+    });
+
+  const handleSubmit = async () => {
+    handlePostRequest(
+      `${process.env.REACT_APP_REQUEST_URL}/templates/create`,
+      inputValue,
+      handleSuccess,
+      handleError
+    );
+    handleClose();
+    clearState();
+  };
+
   return (
     <div>
-      <SimpleDialog open={open} onClose={handleClose} />
+      <SimpleDialog
+        open={open}
+        onClose={() => {
+          handleClose();
+          clearState();
+        }}
+        inputValue={inputValue}
+        handleOnChange={handleOnChange}
+        handleSubmit={handleSubmit}
+        clearState={clearState}
+        handleBlur={handleBlur}
+        touched={touched}
+        errors={errors}
+      />
     </div>
   );
 }
 
-export default DamageRepair;
+export default NewAsset;
