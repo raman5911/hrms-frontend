@@ -32,7 +32,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
 import DownloadIcon from "@mui/icons-material/Download";
-import GroupIcon from '@mui/icons-material/Group';
+import GroupIcon from "@mui/icons-material/Group";
 
 import Attendance from "./Attendance";
 import Reports from "./Reports";
@@ -41,9 +41,8 @@ import Profile from "./Profile";
 import Templates from "./Templates";
 //  import '../App.css';
 
-import './listItem.css';
-import './dashboard.css'
-
+import "./listItem.css";
+import "./dashboard.css";
 
 const Dashboard = () => {
   const drawerWidth = 240;

@@ -8,7 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
 import { KeyboardArrowDown } from "@mui/icons-material";
-import { handlePostRequest } from "../../Utils";
+import { handleGetRequests, handlePostRequest } from "../../Utils";
 import {
   ListItemSecondaryAction,
   Box,
@@ -21,8 +21,13 @@ import MenuItem from "@mui/material/MenuItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { toast } from "react-toastify";
+import Shimmer from "../Shimmer";
 
 const options = ["Assets will be displayed here", "Laptop", "Smartphone"];
+
+handleGetRequests(
+  `${process.env.REACT_APP_REQUEST_URL}/email_templates/fetch_list`
+);
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {

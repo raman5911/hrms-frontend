@@ -33,6 +33,7 @@ import EditTemplate from "./EditTemplate";
 
 import "./templates.css";
 import { getDate } from "../Utils";
+import Shimmer from "./Shimmer";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -460,6 +461,7 @@ const Templates = () => {
   const [approverOptions, setApproverOptions] = useState([]);
   const [mailTemplateOptions, setMailTemplateOptions] = useState([]);
   const [allTemplates, setAllTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const isUsersListFetched = useRef(false);
   const isMailTemplatesFetched = useRef(false);
@@ -499,6 +501,7 @@ const Templates = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   const fetchTemplatesData = async () => {
@@ -531,10 +534,11 @@ const Templates = () => {
     toast.error(err, {
       position: "bottom-left",
     });
-  const handleSuccess = (msg) =>
+  const handleSuccess = (msg) => {
     toast.success(msg, {
       position: "bottom-left",
     });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -633,6 +637,12 @@ const Templates = () => {
       approvers: [],
       tableRows: [],
     });
+
+    setLoading(true);
+    fetchUsersList();
+    fetchTemplatesData();
+    fetchMailTemplatesList();
+    setLoading(false);
   };
 
   const handleOnChange = (e) => {
@@ -696,6 +706,11 @@ const Templates = () => {
   const closeEditDialogBox = () => {
     setOpenEditDialog(false);
     setEditCurrentTemplate(null); // Clear data
+    setLoading(true);
+    fetchUsersList();
+    fetchTemplatesData();
+    fetchMailTemplatesList();
+    setLoading(false);
   };
 
   const handleClickOpen = () => {
@@ -729,61 +744,68 @@ const Templates = () => {
   };
 
   return (
-    <div
-      className="req_main"
-      style={{ position: "relative", padding: "2rem 1rem" }}
-    >
-      <Button
-        variant="contained"
-        className="top_right_btn"
-        onClick={handleClickOpen}
-        style={{
-          position: "absolute",
-          right: "10px",
-          top: "45px",
-        }}
-      >
-        Create New Template
-      </Button>
-      <SimpleDialog
-        open={open}
-        onClose={handleClose}
-        handleSubmit={handleSubmit}
-        inputValue={inputValue}
-        handleOnChange={handleOnChange}
-        handleLevelOfApprovalChange={handleLevelOfApprovalChange}
-        // handleApproverChange={handleApproverChange}
-        addTableRow={addTableRow}
-        handleTableRowChange={handleTableRowChange}
-        deleteTableRow={deleteTableRow}
-        approverOptions={approverOptions}
-        mailTemplateOptions={mailTemplateOptions}
-        handleOnChangeForMail={handleOnChangeForMail}
-      />
+    <>
+      {" "}
+      {loading ? (
+        <Shimmer />
+      ) : (
+        <div
+          className="req_main"
+          style={{ position: "relative", padding: "2rem 1rem" }}
+        >
+          <Button
+            variant="contained"
+            className="top_right_btn"
+            onClick={handleClickOpen}
+            style={{
+              position: "absolute",
+              right: "10px",
+              top: "45px",
+            }}
+          >
+            Create New Template
+          </Button>
+          <SimpleDialog
+            open={open}
+            onClose={handleClose}
+            handleSubmit={handleSubmit}
+            inputValue={inputValue}
+            handleOnChange={handleOnChange}
+            handleLevelOfApprovalChange={handleLevelOfApprovalChange}
+            // handleApproverChange={handleApproverChange}
+            addTableRow={addTableRow}
+            handleTableRowChange={handleTableRowChange}
+            deleteTableRow={deleteTableRow}
+            approverOptions={approverOptions}
+            mailTemplateOptions={mailTemplateOptions}
+            handleOnChangeForMail={handleOnChangeForMail}
+          />
 
-      <h2 className="templates">All Templates</h2>
+          <h2 className="templates">All Templates</h2>
 
-      <div>
-        <DisplayAllTemplates
-          allData={allTemplates}
-          handleCurrentOpened={handleCurrentOpened}
-          handleEditCurrent={handleEditCurrent}
-        />
-        <ViewTemplateDetails
-          open={openDetailsDialog}
-          handleClose={closeDetailDialogBox}
-          data={currentOpenedTemplate}
-          mailOptions={mailTemplateOptions}
-        />
+          <div>
+            <DisplayAllTemplates
+              allData={allTemplates}
+              handleCurrentOpened={handleCurrentOpened}
+              handleEditCurrent={handleEditCurrent}
+            />
+            <ViewTemplateDetails
+              open={openDetailsDialog}
+              handleClose={closeDetailDialogBox}
+              data={currentOpenedTemplate}
+              mailOptions={mailTemplateOptions}
+            />
 
-        <EditTemplate
-          open={openEditDialog}
-          handleClose={closeEditDialogBox}
-          data={editCurrentTemplate}
-          mailOptions={mailTemplateOptions}
-        />
-      </div>
-    </div>
+            <EditTemplate
+              open={openEditDialog}
+              handleClose={closeEditDialogBox}
+              data={editCurrentTemplate}
+              mailOptions={mailTemplateOptions}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

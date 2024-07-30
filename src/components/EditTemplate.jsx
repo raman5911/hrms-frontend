@@ -207,54 +207,63 @@ const ReqForm = ({
             </Grid>
           </Grid>
 
-          {inputValue?.tableRows?.length > 0 && inputValue?.tableRows?.map((row, index) => (
-            <React.Fragment key={row._id}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={5} style={{ marginBottom: "1rem" }}>
-                  <TextField
-                    name={`field_${index + 1}_name`}
-                    label="Input Field Name"
-                    fullWidth
-                    value={row.fieldName}
-                    onChange={(e) =>
-                      handleTableRowChange(row._id, "fieldName", e.target.value)
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
+          {inputValue?.tableRows?.length > 0 &&
+            inputValue?.tableRows?.map((row, index) => (
+              <React.Fragment key={row._id}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={5} style={{ marginBottom: "1rem" }}>
+                    <TextField
+                      name={`field_${index + 1}_name`}
+                      label="Input Field Name"
+                      fullWidth
+                      value={row.fieldName}
+                      onChange={(e) =>
+                        handleTableRowChange(
+                          row._id,
+                          "fieldName",
+                          e.target.value
+                        )
+                      }
+                      variant="outlined"
+                    />
+                  </Grid>
 
-                <Grid item xs={5} style={{ marginBottom: "1rem" }}>
-                  <Select
-                    id={`field_${index + 1}_type`}
-                    value={row.fieldType}
-                    onChange={(e) =>
-                      handleTableRowChange(row._id, "fieldType", e.target.value)
-                    }
-                    fullWidth
-                    displayEmpty
-                    renderValue={(value) =>
-                      value ? value : <em>Choose input type</em>
-                    }
-                  >
-                    {fieldTypeOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
+                  <Grid item xs={5} style={{ marginBottom: "1rem" }}>
+                    <Select
+                      id={`field_${index + 1}_type`}
+                      value={row.fieldType}
+                      onChange={(e) =>
+                        handleTableRowChange(
+                          row._id,
+                          "fieldType",
+                          e.target.value
+                        )
+                      }
+                      fullWidth
+                      displayEmpty
+                      renderValue={(value) =>
+                        value ? value : <em>Choose input type</em>
+                      }
+                    >
+                      {fieldTypeOptions.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Grid>
 
-                <Grid item xs={2} style={{ marginBottom: "1rem" }}>
-                  <Button
-                    onClick={() => deleteTableRow(row._id)}
-                    startIcon={<DeleteIcon />}
-                  >
-                    Delete
-                  </Button>
+                  <Grid item xs={2} style={{ marginBottom: "1rem" }}>
+                    <Button
+                      onClick={() => deleteTableRow(row._id)}
+                      startIcon={<DeleteIcon />}
+                    >
+                      Delete
+                    </Button>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </React.Fragment>
-          ))}
+              </React.Fragment>
+            ))}
         </Grid>
       </Grid>
     </Box>
@@ -280,9 +289,7 @@ function SimpleDialog({
       aria-labelledby="customized-dialog-title"
       open={open}
     >
-      <DialogTitle id="customized-dialog-title">
-        Edit Template
-      </DialogTitle>
+      <DialogTitle id="customized-dialog-title">Edit Template</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={onClose}
@@ -344,41 +351,41 @@ function EditTemplate({ open, handleClose, data, mailOptions }) {
         tableRows: data.tableRows || [],
       });
     }
-  }, [open, data]);  
+  }, [open, data]);
 
   const handleEdit = async (id) => {
     try {
-        const { data } = await axios.put(
-          `${process.env.REACT_APP_REQUEST_URL}/templates/update/${id}`,
-          {
-            ...inputValue,
-          },
-          { withCredentials: true }
-        );
-        console.log(data);
-        const { success, message } = data;
-        if (success) {
-          handleSuccess(message);
-          handleClose();
-        } else {
-          handleError(message);
-          handleClose();
-        }
-      } catch (error) {
-        console.log(error);
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_REQUEST_URL}/templates/update/${id}`,
+        {
+          ...inputValue,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
+      const { success, message } = data;
+      if (success) {
+        handleSuccess(message);
+        handleClose();
+      } else {
+        handleError(message);
+        handleClose();
       }
-  
-      setInputValue({
-        ...inputValue,
-        id: "",
-        name: "",
-        emailTemplate: "",
-        remainderEmailTemplate: "",
-        responseEmailTemplate: "",
-        levelOfApproval: "",
-        tableRows: [],
-      });
-  }
+    } catch (error) {
+      console.log(error);
+    }
+
+    setInputValue({
+      ...inputValue,
+      id: "",
+      name: "",
+      emailTemplate: "",
+      remainderEmailTemplate: "",
+      responseEmailTemplate: "",
+      levelOfApproval: "",
+      tableRows: [],
+    });
+  };
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -423,9 +430,7 @@ function EditTemplate({ open, handleClose, data, mailOptions }) {
   const handleOnChangeForMail = (e) => {
     const { name, value } = e.target;
 
-    const selectedTemplate = mailOptions.find(
-      (option) => option._id === value
-    );
+    const selectedTemplate = mailOptions.find((option) => option._id === value);
 
     setInputValue((prevState) => ({
       ...prevState,
@@ -462,8 +467,9 @@ function EditTemplate({ open, handleClose, data, mailOptions }) {
     }));
   };
 
-  return <div>
-    <SimpleDialog
+  return (
+    <div>
+      <SimpleDialog
         open={open}
         onClose={handleClose}
         handleSubmit={handleEdit}
@@ -476,7 +482,8 @@ function EditTemplate({ open, handleClose, data, mailOptions }) {
         mailOptions={mailOptions}
         handleOnChangeForMail={handleOnChangeForMail}
       />
-  </div>;
+    </div>
+  );
 }
 
 export default EditTemplate;
